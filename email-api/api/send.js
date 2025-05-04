@@ -1,6 +1,12 @@
 const nodemailer = require("nodemailer");
+const cors = require("cors");
 
 module.exports = async (req, res) => {
+  // Enable CORS for all origins
+  cors({
+    origin: '*', // allows any origin to access the API
+  })(req, res, () => {});
+
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Only POST requests allowed" });
   }
