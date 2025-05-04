@@ -1,1 +1,105 @@
-test
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Send Email</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      text-align: center;
+    }
+    .form-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .error-message {
+      color: red;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Send an Email</h1>
+  <div class="form-container">
+    <form id="emailForm">
+      <label for="to">To:</label>
+      <input type="email" id="to" name="to" placeholder="Recipient Email" required>
+
+      <label for="subject">Subject:</label>
+      <input type="text" id="subject" name="subject" placeholder="Email Subject" required>
+
+      <label for="text">Message:</label>
+      <textarea id="text" name="text" rows="4" placeholder="Email Body" required></textarea>
+
+      <button type="submit">Send Email</button>
+    </form>
+
+    <p id="statusMessage" class="error-message"></p>
+  </div>
+
+  <script>
+    document.getElementById('emailForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const to = document.getElementById('to').value;
+      const subject = document.getElementById('subject').value;
+      const text = document.getElementById('text').value;
+
+      const statusMessage = document.getElementById('statusMessage');
+      statusMessage.textContent = '';
+
+      try {
+        const response = await fetch('https://emailer-api-buddyguard-i6x1vqdqc-haziqhuzairi11s-projects.vercel.app/api/send', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer xKH1vkaDqLnecHaSUNiGJGN8', // Replace with your actual API token
+          },
+          body: JSON.stringify({ to, subject, text }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          statusMessage.style.color = 'green';
+          statusMessage.textContent = `Email sent successfully! Message ID: ${result.messageId}`;
+        } else {
+          statusMessage.style.color = 'red';
+          statusMessage.textContent = `Error: ${result.error || 'Unknown error'}`;
+        }
+      } catch (error) {
+        statusMessage.style.color = 'red';
+        statusMessage.textContent = `Error: ${error.message}`;
+      }
+    });
+  </script>
+
+</body>
+</html>
