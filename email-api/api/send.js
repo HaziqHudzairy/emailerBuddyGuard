@@ -1,5 +1,6 @@
 const nodemailer = require("nodemailer");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 
 module.exports = async (req, res) => {
   // Enable CORS for all origins
@@ -11,6 +12,22 @@ module.exports = async (req, res) => {
     return res.status(405).json({ message: "Only POST requests allowed" });
   }
 
+  // Extract token from Authorization header
+  const token = req.headers.authorization?.split(' ')[1];  // Token comes after "Bearer"
+  
+  if (!token) {
+    return res.status(401).json({ message: "Access token is missing" });
+  }
+
+  // Verify the token using a secret key
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Replace with your actual secret key
+    console.log("Token is valid. User data:", decoded); // You can access decoded user info here if needed
+  } catch (error) {
+    return res.status(401).json({ message: "Invalid access token" });
+  }
+
+  // Extract email fields from the request body
   const { to, subject, text } = req.body;
 
   if (!to || !subject || !text) {
